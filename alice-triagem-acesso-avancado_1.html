@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alice Agora — Triagem de Encaminhamento</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --alice-magenta: #BE0380;
+    --alice-beterraba: #690046;
+    --alice-black-magenta: #40002D;
+    --alice-offwhite: #F3F2F0;
+    --alice-offmagenta: #E2D7E0;
+    --alice-offpurple: #DEE2ED;
+    --alice-offgrey: #DDDDD5;
+    --alice-white: #FFFFFF;
+    --alice-gray-dark: #333333;
+    --alice-gray-medium: #666666;
+    --alice-gray-light: #999999;
+    --font-body: 'DM Sans', sans-serif;
+    --radius-button: 16px;
+    --radius-card: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--alice-offwhite);
+    color: var(--alice-black-magenta);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--alice-white);
+    border-bottom: 1px solid var(--alice-offgrey);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-logo {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--alice-magenta);
+    letter-spacing: -0.02em;
+  }
+  .header-logo span {
+    color: var(--alice-black-magenta);
+    font-weight: 400;
+  }
+  .header-tag {
+    font-size: 12px;
+    color: var(--alice-gray-medium);
+    background: var(--alice-offwhite);
+    padding: 4px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--alice-offgrey);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* PAGE TITLE */
+  .page-title {
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--alice-black-magenta);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--alice-gray-medium);
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* FLOW TABS */
+  .flow-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .flow-tab {
+    padding: 7px 16px;
+    border-radius: 99px;
+    border: 1.5px solid var(--alice-offgrey);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    background: var(--alice-white);
+    color: var(--alice-gray-dark);
+    transition: all 0.15s ease;
+    font-family: var(--font-body);
+  }
+  .flow-tab:hover {
+    border-color: var(--alice-magenta);
+    color: var(--alice-magenta);
+  }
+  .flow-tab.active {
+    background: var(--alice-magenta);
+    border-color: var(--alice-magenta);
+    color: var(--alice-white);
+    font-weight: 500;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--alice-white);
+    border-radius: var(--radius-card);
+    padding: 32px;
+    box-shadow: 0 1px 4px rgba(64,0,45,0.06);
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--alice-offgrey);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--alice-magenta);
+    border-radius: 99px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--alice-gray-light);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* QUESTION */
+  .step-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--alice-magenta);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--alice-black-magenta);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--alice-offgrey);
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--alice-white);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .opt:hover {
+    border-color: var(--alice-magenta);
+    background: #FDF5FB;
+  }
+  .opt.selected {
+    border-color: var(--alice-magenta);
+    background: #FDF5FB;
+  }
+  .opt-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--alice-offgrey);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+  }
+  .opt.selected .opt-radio {
+    border-color: var(--alice-magenta);
+    background: var(--alice-magenta);
+  }
+  .opt-radio-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: white;
+    display: none;
+  }
+  .opt.selected .opt-radio-dot { display: block; }
+  .opt-text {
+    font-size: 14px;
+    color: var(--alice-black-magenta);
+    line-height: 1.6;
+  }
+
+  /* NAV BUTTONS */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .btn-back {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--alice-gray-medium);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px 0;
+    letter-spacing: -0.01em;
+  }
+  .btn-back:hover { color: var(--alice-black-magenta); }
+  .btn-next {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--alice-white);
+    background: var(--alice-magenta);
+    border: none;
+    border-radius: var(--radius-button);
+    padding: 13px 28px;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: background 0.15s;
+  }
+  .btn-next:hover:not(:disabled) { background: var(--alice-beterraba); }
+  .btn-next:disabled { opacity: 0.35; cursor: default; }
+
+  /* SELECT SCREEN */
+  .select-intro {
+    font-size: 14px;
+    color: var(--alice-gray-medium);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .flow-select-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+  .flow-card {
+    padding: 20px;
+    border: 1.5px solid var(--alice-offgrey);
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--alice-white);
+    transition: all 0.15s;
+  }
+  .flow-card:hover {
+    border-color: var(--alice-magenta);
+    background: #FDF5FB;
+  }
+  .flow-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--alice-offmagenta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .flow-card-icon svg { width: 16px; height: 16px; }
+  .flow-card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--alice-black-magenta);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .flow-card-desc {
+    font-size: 12px;
+    color: var(--alice-gray-medium);
+    line-height: 1.5;
+  }
+
+  /* RESULT */
+  .result-destination {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+  .result-title {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .result-reason {
+    font-size: 14px;
+    color: var(--alice-gray-dark);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--alice-offgrey);
+  }
+  .alarm-box {
+    background: #FFF1F1;
+    border: 1px solid #F5C4C4;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+  .alarm-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #8B0000;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .alarm-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .alarm-list li {
+    font-size: 13px;
+    color: #8B0000;
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .alarm-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    font-size: 11px;
+  }
+  .result-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-secondary-alice {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--alice-magenta);
+    background: transparent;
+    border: 1.5px solid var(--alice-magenta);
+    border-radius: var(--radius-button);
+    padding: 10px 20px;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: all 0.15s;
+  }
+  .btn-secondary-alice:hover {
+    background: var(--alice-magenta);
+    color: var(--alice-white);
+  }
+  .disclaimer {
+    font-size: 11px;
+    color: var(--alice-gray-light);
+    margin-top: 20px;
+    line-height: 1.5;
+  }
+
+  /* DESTINATION COLORS */
+  .dest-ps { background: #FFEAEA; color: #8B0000; }
+  .dest-ps-title { color: #8B0000; }
+  .dest-acesso { background: #F0FAE6; color: #2A5E0A; }
+  .dest-acesso-title { color: #2A5E0A; }
+  .dest-pa { background: var(--alice-offpurple); color: var(--alice-beterraba); }
+  .dest-pa-title { color: var(--alice-beterraba); }
+  .dest-chat { background: var(--alice-offmagenta); color: var(--alice-beterraba); }
+  .dest-chat-title { color: var(--alice-beterraba); }
+  .dest-mfc { background: #FFF8E6; color: #7A4A00; }
+  .dest-mfc-title { color: #7A4A00; }
+
+  @media (max-width: 600px) {
+    .header { padding: 14px 20px; }
+    .main { padding: 24px 16px 60px; }
+    .card { padding: 24px 20px; }
+    .flow-select-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">alice<span> agora</span></div>
+  <div class="header-tag">Triagem de encaminhamento</div>
+</div>
+
+<div class="main">
+  <h1 class="page-title">Para onde encaminhar?</h1>
+  <p class="page-subtitle">Responda as perguntas sobre o caso para receber a recomendação de destino baseada nos protocolos clínicos da Alice.</p>
+
+  <div class="flow-tabs" id="flow-tabs"></div>
+  <div class="card" id="app"></div>
+</div>
+
+<script>
+const FLOWS = {
+  geral: {
+    label: "Geral",
+    desc: "Critérios gerais para qualquer queixa",
+    steps: [
+      { id:"gravidade", q:"O membro apresenta algum sinal de gravidade imediata?", opts:[
+        {text:"Sim — alteração de consciência, sangramento ativo, dificuldade respiratória, síncope ou colapso", val:"sim"},
+        {text:"Não — estado geral preservado, sem instabilidade aparente", val:"nao"}
+      ]},
+      { id:"progressao", q:"Os sintomas estão piorando progressivamente nas últimas horas?", opts:[
+        {text:"Sim, piora progressiva ou rápida deterioração", val:"sim"},
+        {text:"Estável ou com melhora parcial", val:"nao"}
+      ]},
+      { id:"duracao", q:"Qual é o tempo de evolução dos sintomas?", opts:[
+        {text:"Início agudo — horas a 1–2 dias", val:"agudo"},
+        {text:"Subagudo — 3 a 14 dias, estável", val:"subagudo"},
+        {text:"Crônico — mais de 14 dias", val:"cronico"}
+      ]},
+      { id:"exame", q:"Há necessidade de exame físico presencial para definir a conduta?", opts:[
+        {text:"Sim — palpação, ausculta, inspeção, manobras específicas", val:"sim"},
+        {text:"Não — conduta possível sem exame físico", val:"nao"}
+      ]},
+      { id:"exames_comp", q:"O caso exige exames complementares imediatos (lab ou imagem)?", opts:[
+        {text:"Sim — necessita raio-x, TC, laboratório urgente", val:"sim"},
+        {text:"Não — sem indicação imediata de exames", val:"nao"}
+      ]},
+      { id:"espera", q:"O membro tem condições de aguardar atendimento em até 72h com segurança?", opts:[
+        {text:"Sim — janela de 72h é segura", val:"sim"},
+        {text:"Não — necessita avaliação em menos de 72h", val:"nao"}
+      ]}
+    ]
+  },
+  gine: {
+    label: "Ginecológico / urogenital",
+    desc: "Corrimento, cistite, IST, hemorróida",
+    steps: [
+      { id:"gine_alarme", q:"Há algum sinal de alarme ginecológico presente?", opts:[
+        {text:"Sim — febre + dor lombar/flancos, dor pélvica intensa, sangramento vaginal importante, suspeita de gestação ectópica, DIU com dor abdominal", val:"sim"},
+        {text:"Não", val:"nao"}
+      ]},
+      { id:"gine_gravida", q:"A membra é gestante?", opts:[
+        {text:"Sim", val:"sim"},
+        {text:"Não", val:"nao"}
+      ]},
+      { id:"gine_sintoma", q:"Qual melhor descreve a queixa principal?", opts:[
+        {text:"Corrimento vaginal sem alarmes — suspeita de vaginose, candidíase ou IST leve", val:"corrimento"},
+        {text:"Disúria, urgência miccional, suspeita de cistite simples sem febre", val:"cistite"},
+        {text:"Lesão genital, hemorróida, suspeita de IST com lesão externa", val:"lesao"},
+        {text:"Queixa crônica — dor pélvica crônica, endometriose, nódulo mamário", val:"cronica"}
+      ]},
+      { id:"gine_exame", q:"O diagnóstico e conduta podem ser definidos sem exame físico presencial?", opts:[
+        {text:"Sim — quadro clínico claro, tratamento empírico possível via PA digital", val:"sim"},
+        {text:"Não — exame físico necessário para conduta", val:"nao"}
+      ]}
+    ]
+  },
+  abd: {
+    label: "Dor abdominal",
+    desc: "Dor aguda, subaguda ou gastrointestinal",
+    steps: [
+      { id:"abd_intensidade", q:"Como é a intensidade da dor abdominal?", opts:[
+        {text:"Intensa, início súbito ou incapacitante", val:"intensa"},
+        {text:"Leve a moderada", val:"leve_mod"}
+      ]},
+      { id:"abd_alarme", q:"Há algum sinal de alarme associado?", opts:[
+        {text:"Sim — febre com calafrios, vômitos repetidos, distensão abdominal importante, sangramento GI, síncope ou mal-estar intenso", val:"sim"},
+        {text:"Não — ausência de sinais de gravidade", val:"nao"}
+      ]},
+      { id:"abd_evolucao", q:"Como está a evolução nas últimas horas?", opts:[
+        {text:"Piora progressiva", val:"piora"},
+        {text:"Estável, sem piora", val:"estavel"}
+      ]},
+      { id:"abd_exame", q:"Há necessidade de exame físico abdominal para definir conduta?", opts:[
+        {text:"Sim — palpação, ausculta, avaliação de sinais de irritação peritoneal", val:"sim"},
+        {text:"Não — conduta possível via PA digital", val:"nao"}
+      ]}
+    ]
+  },
+  musculo: {
+    label: "Musculoesquelético",
+    desc: "Dor lombar, cervicalgia, articulações",
+    steps: [
+      { id:"mus_trauma", q:"Houve trauma significativo?", opts:[
+        {text:"Sim — trauma de alta energia, suspeita de fratura", val:"sim"},
+        {text:"Não ou trauma leve", val:"nao"}
+      ]},
+      { id:"mus_neuro", q:"Há déficit neurológico presente?", opts:[
+        {text:"Sim — fraqueza, parestesia, perda de controle esfincteriano", val:"sim"},
+        {text:"Não", val:"nao"}
+      ]},
+      { id:"mus_intensidade", q:"Qual a intensidade da dor?", opts:[
+        {text:"Intensa, incapacitante ou não responsiva a analgésicos/AINEs", val:"intensa"},
+        {text:"Leve a moderada, parcialmente responsiva a analgésicos", val:"leve_mod"}
+      ]},
+      { id:"mus_duracao", q:"Qual é o tempo de evolução?", opts:[
+        {text:"Agudo — horas a poucos dias", val:"agudo"},
+        {text:"Subagudo — 3 a 14 dias", val:"subagudo"},
+        {text:"Crônico — mais de 14 dias", val:"cronico"}
+      ]}
+    ]
+  },
+  ped: {
+    label: "Pediatria / IVAS / otalgia",
+    desc: "Gripe, resfriado, dor de ouvido, crianças",
+    steps: [
+      { id:"ped_idade", q:"Qual a faixa etária da criança?", opts:[
+        {text:"Menor de 2 anos", val:"menor2"},
+        {text:"2 anos ou mais", val:"maior2"}
+      ]},
+      { id:"ped_alarme", q:"Há sinal de alarme presente?", opts:[
+        {text:"Sim — dificuldade respiratória, febre alta persistente, trismo, abscesso profundo, dor intensa sem resposta a analgésicos", val:"sim"},
+        {text:"Não", val:"nao"}
+      ]},
+      { id:"ped_exame", q:"Há necessidade de exame físico para definir conduta?", opts:[
+        {text:"Sim — ausculta pulmonar, otoscopia, avaliação de orofaringe", val:"sim"},
+        {text:"Não — conduta possível via PA digital", val:"nao"}
+      ]}
+    ]
+  }
+};
+
+function calcResult(flow, answers) {
+  if (flow === "geral") {
+    if (answers.gravidade === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Sinal de gravidade imediata identificado. Encaminhar ao PS sem demora.", alarms:["Alteração de consciência","Sangramento ativo","Dificuldade respiratória","Síncope ou colapso"] };
+    if (answers.progressao === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Piora progressiva dos sintomas — risco de deterioração rápida. PS é o destino seguro.", alarms:["Piora progressiva nas últimas horas"] };
+    if (answers.duracao === "cronico") return { dest:"mfc", title:"Médico de Família (MFC)", reason:"Queixa crônica (>14 dias). Deve ser vinculada ao médico de família para acompanhamento longitudinal.", alarms:[] };
+    if (answers.exame === "nao") {
+      if (answers.duracao === "agudo") return { dest:"pa", title:"PA Digital", reason:"Quadro agudo leve sem necessidade de exame físico. PA digital pode resolver.", alarms:[] };
+      return { dest:"chat", title:"Orientação no Chat", reason:"Sem necessidade de exame físico e sem conduta médica imediata. Orientação resolutiva no chat.", alarms:[] };
+    }
+    if (answers.exames_comp === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Necessidade de exames complementares imediatos (lab ou imagem). PS é o destino adequado.", alarms:["Exames de urgência necessários"] };
+    if (answers.espera === "nao") return { dest:"ps", title:"Pronto Socorro", reason:"Membro não tem condições de aguardar 72h com segurança. PS indicado.", alarms:[] };
+    return { dest:"acesso", title:"Acesso Avançado", reason:"Todos os critérios presentes: quadro agudo/subagudo estável, exame físico necessário, sem exames imediatos, janela de 72h segura.", alarms:[] };
+  }
+  if (flow === "gine") {
+    if (answers.gine_alarme === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Sinal de alarme ginecológico presente. Encaminhar ao PS obstétrico/ginecológico.", alarms:["Febre + dor lombar ou flancos","Dor pélvica intensa ou progressiva","Sangramento vaginal importante","Suspeita de gestação ectópica","Dor abdominal com DIU"] };
+    if (answers.gine_gravida === "sim") return { dest:"acesso", title:"Acesso Avançado", reason:"Gestante com queixa leve e estável. Acesso Avançado com plano claro de sinais de piora e rede de suporte verificada.", alarms:["Verificar rede de suporte da gestante","Orientar sinais de piora materna e fetal"] };
+    if (answers.gine_sintoma === "cronica") return { dest:"mfc", title:"Médico de Família (MFC)", reason:"Queixa crônica ginecológica. Encaminhar ao longitudinal (MFC/gineco) para investigação.", alarms:[] };
+    if (answers.gine_exame === "sim") return { dest:"acesso", title:"Acesso Avançado", reason:"Queixa urogenital leve, estável, sem sinais sistêmicos, com necessidade de exame físico. Critérios para Acesso Avançado presentes.", alarms:[] };
+    if (answers.gine_sintoma === "cistite") return { dest:"pa", title:"PA Digital", reason:"Cistite simples sem febre e sem necessidade de exame físico. PA digital resolve.", alarms:[] };
+    return { dest:"pa", title:"PA Digital", reason:"Quadro ginecológico leve com possibilidade de tratamento empírico digital (candidíase, vaginose bacteriana).", alarms:[] };
+  }
+  if (flow === "abd") {
+    if (answers.abd_intensidade === "intensa") return { dest:"ps", title:"Pronto Socorro", reason:"Dor abdominal intensa ou de início súbito. Indicação de PS.", alarms:["Dor intensa ou início súbito","Risco de abdome agudo"] };
+    if (answers.abd_alarme === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Sinal de alarme associado à dor abdominal. PS indicado.", alarms:["Febre com calafrios","Vômitos repetidos","Distensão abdominal importante","Sangramento gastrointestinal","Síncope ou mal-estar intenso"] };
+    if (answers.abd_evolucao === "piora") return { dest:"ps", title:"Pronto Socorro", reason:"Piora progressiva da dor — risco de deterioração. PS indicado.", alarms:["Dor progressiva ou incapacitante"] };
+    if (answers.abd_exame === "sim") return { dest:"acesso", title:"Acesso Avançado", reason:"Dor abdominal leve a moderada, estável, sem alarmes, com necessidade de exame físico abdominal. Acesso Avançado indicado.", alarms:[] };
+    return { dest:"pa", title:"PA Digital", reason:"Dor abdominal leve sem necessidade de exame físico presencial. PA digital pode resolver.", alarms:[] };
+  }
+  if (flow === "musculo") {
+    if (answers.mus_trauma === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Trauma significativo com suspeita de fratura. PS indicado para imagem e avaliação.", alarms:["Trauma de alta energia","Suspeita de fratura"] };
+    if (answers.mus_neuro === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Déficit neurológico presente. Indicação de avaliação urgente no PS.", alarms:["Fraqueza ou paresia","Parestesia importante","Perda de controle esfincteriano"] };
+    if (answers.mus_intensidade === "intensa") return { dest:"ps", title:"Pronto Socorro", reason:"Dor intensa, incapacitante ou não responsiva a analgésicos. PS indicado.", alarms:["Dor não responsiva a AINEs ou relaxante muscular"] };
+    if (answers.mus_duracao === "cronico" || answers.mus_duracao === "subagudo") return { dest:"mfc", title:"Médico de Família (MFC)", reason:"Dor musculoesquelética subaguda ou crônica. Encaminhar ao MFC para vinculação e cuidado longitudinal.", alarms:[] };
+    return { dest:"acesso", title:"Acesso Avançado", reason:"Dor musculoesquelética aguda, leve a moderada, sem trauma grave, sem déficit neurológico, evolução estável. Acesso Avançado indicado.", alarms:[] };
+  }
+  if (flow === "ped") {
+    if (answers.ped_idade === "menor2") return { dest:"ps", title:"Pronto Socorro", reason:"Criança menor de 2 anos. Contra-indicação absoluta para Acesso Avançado — encaminhar ao PS independente da queixa.", alarms:["Contra-indicação absoluta: menores de 2 anos não vão para Acesso Avançado"] };
+    if (answers.ped_alarme === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Sinal de alarme pediátrico presente. PS indicado.", alarms:["Dificuldade respiratória","Febre alta persistente","Trismo ou abscesso profundo","Dor intensa sem resposta a analgésicos"] };
+    if (answers.ped_exame === "sim") return { dest:"acesso", title:"Acesso Avançado", reason:"IVAS/otalgia em criança ≥2 anos, sem alarmes, com necessidade de exame físico (otoscopia, ausculta, orofaringe). Acesso Avançado indicado.", alarms:[] };
+    return { dest:"pa", title:"PA Digital", reason:"Quadro pediátrico leve sem necessidade de exame físico. PA digital resolve.", alarms:[] };
+  }
+  return { dest:"chat", title:"Orientação no Chat", reason:"Sem critérios para outro destino.", alarms:[] };
+}
+
+const DEST_STYLE = {
+  ps:     { badge:"dest-ps",     title:"dest-ps-title"     },
+  acesso: { badge:"dest-acesso", title:"dest-acesso-title" },
+  pa:     { badge:"dest-pa",     title:"dest-pa-title"     },
+  chat:   { badge:"dest-chat",   title:"dest-chat-title"   },
+  mfc:    { badge:"dest-mfc",    title:"dest-mfc-title"    }
+};
+
+let selectedFlow = null;
+let currentStep = 0;
+let answers = {};
+
+function renderTabs() {
+  const wrap = document.getElementById("flow-tabs");
+  wrap.innerHTML = Object.entries(FLOWS).map(([k,v]) =>
+    `<button class="flow-tab ${k===selectedFlow?'active':''}" onclick="selectFlow('${k}')">${v.label}</button>`
+  ).join("");
+}
+
+function selectFlow(key) {
+  selectedFlow = key;
+  currentStep = 0;
+  answers = {};
+  renderTabs();
+  renderStep();
+}
+
+function renderSelect() {
+  selectedFlow = null;
+  renderTabs();
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <p class="select-intro">Selecione a categoria da queixa principal para iniciar a triagem:</p>
+    <div class="flow-select-grid">
+      ${Object.entries(FLOWS).map(([k,v]) => `
+        <div class="flow-card" onclick="selectFlow('${k}')">
+          <div class="flow-card-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#BE0380" stroke-width="1.5">
+              <circle cx="8" cy="8" r="6"/><path d="M8 5v4l2 2"/>
+            </svg>
+          </div>
+          <div class="flow-card-title">${v.label}</div>
+          <div class="flow-card-desc">${v.desc}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderStep() {
+  const steps = FLOWS[selectedFlow].steps;
+  const step = steps[currentStep];
+  const pct = Math.round((currentStep / steps.length) * 100);
+  const app = document.getElementById("app");
+  const isLast = currentStep === steps.length - 1;
+
+  app.innerHTML = `
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <span class="progress-label">${currentStep+1} / ${steps.length}</span>
+    </div>
+    <p class="step-tag">Pergunta ${currentStep+1}</p>
+    <p class="question-text">${step.q}</p>
+    <div class="options" id="opts">
+      ${step.opts.map((o,i) => `
+        <div class="opt ${answers[step.id]===o.val?'selected':''}" onclick="pick('${step.id}','${o.val}')">
+          <div class="opt-radio"><div class="opt-radio-dot"></div></div>
+          <div class="opt-text">${o.text}</div>
+        </div>
+      `).join("")}
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="goBack()">← Voltar</button>
+      <button class="btn-next" id="btn-next" onclick="goNext()" ${!answers[step.id]?'disabled':''}>
+        ${isLast ? 'Ver recomendação →' : 'Próxima →'}
+      </button>
+    </div>
+  `;
+}
+
+function pick(id, val) {
+  answers[id] = val;
+  renderStep();
+}
+
+function goNext() {
+  const steps = FLOWS[selectedFlow].steps;
+  const step = steps[currentStep];
+  if (!answers[step.id]) return;
+  if (currentStep < steps.length - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (currentStep > 0) {
+    currentStep--;
+    renderStep();
+  } else {
+    renderSelect();
+  }
+}
+
+function showResult() {
+  const res = calcResult(selectedFlow, answers);
+  const style = DEST_STYLE[res.dest];
+  const app = document.getElementById("app");
+
+  app.innerHTML = `
+    <div class="result-destination ${style.badge}">${res.title}</div>
+    <h2 class="result-title ${style.title}">Encaminhar para: ${res.title}</h2>
+    <p class="result-reason">${res.reason}</p>
+    ${res.alarms.length > 0 ? `
+      <div class="alarm-box">
+        <div class="alarm-title">Sinais de alarme identificados</div>
+        <ul class="alarm-list">
+          ${res.alarms.map(a=>`<li>${a}</li>`).join("")}
+        </ul>
+      </div>
+    ` : ""}
+    <div class="result-actions">
+      <button class="btn-secondary-alice" onclick="renderSelect()">Nova triagem</button>
+      <button class="btn-secondary-alice" onclick="selectFlow('${selectedFlow}')">Refazer esta queixa</button>
+    </div>
+    <p class="disclaimer">Recomendação baseada nos protocolos clínicos Alice (03/2026). A decisão final é sempre do profissional de saúde.</p>
+  `;
+}
+
+renderSelect();
+</script>
+</body>
+</html>
