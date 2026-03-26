@@ -572,7 +572,10 @@ function calcResult(flow, answers) {
     if (answers.gine_alarme === "sim") return { dest:"ps", title:"Pronto Socorro", reason:"Sinal de alarme ginecológico presente. Encaminhar ao PS obstétrico/ginecológico.", alarms:["Febre + dor lombar ou flancos","Dor pélvica intensa ou progressiva","Sangramento vaginal importante","Suspeita de gestação ectópica","Dor abdominal com DIU"] };
     if (answers.gine_gravida === "sim") return { dest:"acesso", title:"Acesso Avançado", reason:"Gestante com queixa leve e estável. Acesso Avançado com plano claro de sinais de piora e rede de suporte verificada.", alarms:["Verificar rede de suporte da gestante","Orientar sinais de piora materna e fetal"] };
     if (answers.gine_sintoma === "cronica") return { dest:"mfc", title:"Médico de Família (MFC)", reason:"Queixa crônica ginecológica. Encaminhar ao longitudinal (MFC/gineco) para investigação.", alarms:[] };
-    if (answers.gine_exame === "sim") return { dest:"acesso", title:"Acesso Avançado", reason:"Queixa urogenital leve, estável, sem sinais sistêmicos, com necessidade de exame físico. Critérios para Acesso Avançado presentes.", alarms:[] };
+    if (answers.gine_exame === "sim") {
+      if (answers.gine_sintoma === "cistite") return { dest:"acesso", title:"Acesso Avançado", reason:"Cistite com necessidade de exame físico presencial. Critérios para Acesso Avançado presentes.", alarms:[] };
+      return { dest:"acesso", title:"Acesso Avançado", reason:"Queixa urogenital/lesão genital leve, estável, sem sinais sistêmicos, com necessidade de exame físico presencial. Critérios para Acesso Avançado presentes.", alarms:[] };
+    }
     if (answers.gine_sintoma === "cistite") return { dest:"pa", title:"PA Digital", reason:"Cistite simples sem febre e sem necessidade de exame físico. PA digital resolve.", alarms:[] };
     return { dest:"pa", title:"PA Digital", reason:"Quadro ginecológico leve com possibilidade de tratamento empírico digital (candidíase, vaginose bacteriana).", alarms:[] };
   }
